@@ -1,9 +1,10 @@
-// GENERATED asset paths
-// Do not edit manually.
+// ---------------------------------------------------------------------
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// ---------------------------------------------------------------------
 
-class Assets {
-  static const String _assetPath = 'assets';
+class AppAssets {
+  AppAssets._();
 
-  static const String main_Icon_png = '$_assetPath/Main Icon.png';
-
+  static const String l10nTranslationsCsv = 'assets/l10n/translations.csv';
+  static const String mainIconPng = 'assets/Main Icon.png';
 }

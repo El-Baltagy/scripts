@@ -3,15 +3,15 @@ import 'dart:io';
 /// Usage:
 ///   dart run tool/extract_assets.dart <scanDir> <outputFile>
 /// Example:
-///   dart run tool/extract_assets.dart assets/images lib/core/constants/app_assets.dart
+///   dart run tool/extract_assets.dart assets lib/core/constants/app_assets.dart
 
 Future<void> main(List<String> args) async {
-  if (args.isEmpty) {
-    print('❌ Usage: dart run tool/extract_assets.dart <scanDir> <outputFile>');
-    exit(1);
-  }
+  // if (args.isEmpty) {
+  //   print('❌ Usage: dart run tool/extract_assets.dart <scanDir> <outputFile>');
+  //   exit(1);
+  // }
 
-  final String scanDirPath = args[0];
+  final String scanDirPath = args.length > 0 ? args[0] : 'assets';
   // If user provides a 2nd argument, use it; otherwise default for backward compatibility
   final String outputPath = args.length > 1 ? args[1] : 'lib/core/constants/app_assets.dart';
 
@@ -71,8 +71,7 @@ Future<void> main(List<String> args) async {
     // assets/images/logo.png
     final fullPath = '$basePath/$relativeName';
 
-    buffer.writeln("  /// Assets for [$varName]");
-    buffer.writeln("  /// Path: $fullPath");
+
     buffer.writeln("  static const String $varName = '$fullPath';");
     count++;
   }
