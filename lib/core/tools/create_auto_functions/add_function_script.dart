@@ -1,10 +1,6 @@
-import 'dart:convert';
-import 'dart:io';
+ import 'dart:io';
 import '../create_auto_files/path_constants.dart';
-import 'package:${PathConstants().projectName}/core/tools/create_auto_files/path_constants.dart';
-import 'package:${PathConstants().projectName}/core/tools/create_auto_files/route_generator_data.dart';
-
-import 'add_auto_functions_and_models.dart';
+ import '../create_auto_files/route_generator_data.dart';
 
 // ─── Entry Point ─────────────────────────────────────────────────────────────
 //

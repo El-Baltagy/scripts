@@ -11,8 +11,7 @@
 
 import 'dart:convert';
 import 'dart:io';
-
-import 'package:newf/core/tools/create_auto_files/path_constants.dart';
+import '../create_auto_files/path_constants.dart';
 
 // ── Configuration ─────────────────────────────────────────────────────────────
 const String ASSETS_L10N_PATH = 'assets/l10n';
