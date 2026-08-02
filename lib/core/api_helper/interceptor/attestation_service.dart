@@ -48,7 +48,7 @@ class AttestationService {
           final response = await _appAttestIntegrity.iOSgenerateAttestation(nonce);
           _iOSKeyID = response?.keyId;
           
-          if (_iOSKeyID == null) throw Exception("Failed to generate iOS Attestation Key");
+          if (_iOSKeyID == null) throw Exception('Failed to generate iOS Attestation Key');
           
           // Note for Production: In a real app, the very first time you generate this, 
           // you should send `response.attestation` to your backend. 

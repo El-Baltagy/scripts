@@ -2,18 +2,18 @@
 import 'package:dio/dio.dart';
 
 class AuthInterceptor extends Interceptor {
-  final Dio dio;
-  final Future<String?> Function()? getAccessToken;
-  final Future<String?> Function()? refreshToken;
 
   AuthInterceptor({
     required this.dio,
     required this.getAccessToken,
     required this.refreshToken,
   });
+  final Dio dio;
+  final Future<String?> Function()? getAccessToken;
+  final Future<String?> Function()? refreshToken;
 
   @override
-  void onRequest(RequestOptions options, handler) async {
+  Future<void> onRequest(RequestOptions options, RequestInterceptorHandler handler) async {
 if(getAccessToken!=null){
   final token = await getAccessToken!();
   if (token != null) {
@@ -25,7 +25,7 @@ handler.next(options);
   }
 
   @override
-  void onError(DioException err, handler) async {
+  Future<void> onError(DioException err, ErrorInterceptorHandler handler) async {
     if (err.response?.statusCode == 401) {
      if(refreshToken!=null){
        final newToken = await refreshToken!();

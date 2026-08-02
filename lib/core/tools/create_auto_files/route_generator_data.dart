@@ -49,7 +49,7 @@ class AppRouter extends _\$AppRouter {
     return;
   }
 
-  String importStr = "import 'package:${PathConstants().projectName}/features/screens/${PathConstants().name}/ui/$screenFileName';";
+  String importStr = "import 'package:${PathConstants().projectName}/features/screens/${PathConstants().name}/ui/${screenFileName.replaceAll('_screen.dart', '')}/$screenFileName';";
   if (!content.contains(importStr)) {
     updatedText = updatedText.replaceFirst(
       "part",
@@ -69,32 +69,91 @@ class AppRouter extends _\$AppRouter {
   );
 
   file.writeAsStringSync(updatedText);
-}
 
+  // Automatically update route.gr.dart
+  final String screenName = routeName.replaceAll('Route', 'Page');
+  final String argsName = routeName + 'Args';
+  final String grFilePath = PathConstants().routeGenPath();
+  final File grFile = File(grFilePath);
+  
+  if (grFile.existsSync()) {
+    String grContent = await grFile.readAsString();
+    
+    String pagesMapEntry = '''
+    $routeName.name: (routeData) {
+      final args = routeData.argsAs<$argsName>(orElse: () =>   $argsName.noArgs());
+      return AutoRoutePage<dynamic>(
+        routeData: routeData,
+        child: WrappedRoute(
+            child: $screenName(
+           args: args ,
+        )),
+      );
+    },''';
+    
+    if (!grContent.contains('$routeName.name:')) {
+      grContent = grContent.replaceFirst(
+        'final Map<String, PageFactory> pagesMap = {',
+        'final Map<String, PageFactory> pagesMap = {\n$pagesMapEntry'
+      );
+    }
+    
+    String routeClass = '''
 
-Future<void>makeBuildRunner()async{
-  stdout.write('Do you want generate only for this auto rout [Y/N]: ');
-  final input =
-      stdin.readLineSync(encoding: utf8)?.trim().toLowerCase() ?? '';
-  if (input.isEmpty || input == 'n' || input == 'no') {
-    print('Aborted by user.');
-    exit(0);
-  }
-  List<String> additionalArg = [];
-
-  if (input.toLowerCase() == 'y' || input.toLowerCase() == 'yes') {
-    additionalArg = ['--build-filter=${PathConstants().routeGenPath()}'];
-  }
-
-  final process = await Process.start(
-    'flutter',
-    ['pub', 'run', 'build_runner', 'build', ...additionalArg],
-    runInShell: true,
+/// generated route for
+/// [$screenName]
+class $routeName extends PageRouteInfo<$argsName> {
+  $routeName({
+   required $argsName args  ,
+    List<PageRouteInfo>? children,
+  }) : super(
+    $routeName.name,
+    args: args,
+    initialChildren: children,
   );
-  process.stdout.transform(SystemEncoding().decoder).listen(print);
-  process.stderr.transform(SystemEncoding().decoder).listen(print);
-  await process.exitCode;
+
+  static const String name = '$routeName';
+
+  static const PageInfo<$argsName> page =
+  PageInfo<$argsName>(name);
 }
-Future<void> main() async {
-  await makeBuildRunner();
+class $argsName {
+  const $argsName( );
+   static $argsName noArgs()=>$argsName();
 }
+''';
+    
+    if (!grContent.contains('class $routeName extends PageRouteInfo')) {
+      grContent = grContent + routeClass;
+    }
+    
+    grFile.writeAsStringSync(grContent);
+  }
+}
+
+// Future<void>makeBuildRunner()async{
+//   stdout.write('Do you want generate only for this auto rout [Y/N]: ');
+//   final input =
+//       stdin.readLineSync(encoding: utf8)?.trim().toLowerCase() ?? '';
+//   if (input.isEmpty || input == 'n' || input == 'no') {
+//     print('Aborted by user.');
+//     exit(0);
+//   }
+//   List<String> additionalArg = [];
+//
+//   if (input.toLowerCase() == 'y' || input.toLowerCase() == 'yes') {
+//     additionalArg = ['--build-filter=${PathConstants().routeGenPath()}'];
+//   }
+//
+//   final process = await Process.start(
+//     'flutter',
+//     ['pub', 'run', 'build_runner', 'build', ...additionalArg],
+//     runInShell: true,
+//   );
+//   process.stdout.transform(SystemEncoding().decoder).listen(print);
+//   process.stderr.transform(SystemEncoding().decoder).listen(print);
+//   await process.exitCode;
+// }
+// Future<void> main() async {
+//   await makeBuildRunner();
+// }

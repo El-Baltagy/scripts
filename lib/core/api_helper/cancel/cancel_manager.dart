@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import '../../../core/shared/methods/print.dart';
+import 'package:newf/core/shared/methods/print.dart';
 
 class CancelManager {
   static final Map<int, CancelToken> _tokens = {};
@@ -15,10 +15,10 @@ class CancelManager {
   static void cancel(int id, [String? reason]) {
     final token = _tokens[id];
     if (token != null && !token.isCancelled) {
-      token.cancel(reason ?? "Cancelled by user");
-      PrintHelper().ordinaryPrint("Request with ID $id was cancelled");
+      token.cancel(reason ?? 'Cancelled by user');
+      PrintHelper().ordinaryPrint('Request with ID $id was cancelled');
     } else {
-      PrintHelper().ordinaryPrint("No active request found with ID $id");
+      PrintHelper().ordinaryPrint('No active request found with ID $id');
     }
   }
 

@@ -50,7 +50,12 @@ dependencies:
   equatable:
   analyzer:
   custom_lint_builder: ^0.6.0
-
+  hive_ce: ^2.19.3
+  hive_ce_flutter: ^2.3.4
+  fluttertoast:
+  skeletonizer: ^2.1.2
+  token_saver:
+    path: packages/token_saver
   crypto: ^3.0.3
   http_certificate_pinning: ^2.0.0
   app_attest_integrity: ^1.0.0

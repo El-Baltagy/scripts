@@ -2,23 +2,29 @@ import 'dart:convert';
 import 'dart:io';
 
 void main(List<String> args) async {
-  String englishValue = '';
+  List<String> inputs = [];
 
   if (args.isNotEmpty) {
-    englishValue = args.join(' ');
+    for (var arg in args) {
+      if (arg.contains(',')) {
+        inputs.addAll(arg.split(',').map((e) => e.trim()).where((e) => e.isNotEmpty));
+      } else {
+        final trimmed = arg.trim();
+        if (trimmed.isNotEmpty) {
+          inputs.add(trimmed);
+        }
+      }
+    }
   } else {
-    stdout.write('Enter the English text to add: ');
-    englishValue = stdin.readLineSync(encoding: utf8) ?? '';
+    stdout.write('Enter the English texts or keys to add (comma-separated): ');
+    final inputStr = stdin.readLineSync(encoding: utf8) ?? '';
+    inputs = inputStr.split(',').map((e) => e.trim()).where((e) => e.isNotEmpty).toList();
   }
 
-  if (englishValue.trim().isEmpty) {
-    print('❌ Error: English text cannot be empty.');
+  if (inputs.isEmpty) {
+    print('❌ Error: You must provide at least 1 key or English text.');
     return;
   }
-
-  // Generate snake_case key
-  final key = toSnakeCase(englishValue);
-  print('🔑 Generated key: $key');
 
   final csvPath = 'assets/l10n/translations.csv';
   final file = File(csvPath);
@@ -38,18 +44,42 @@ void main(List<String> args) async {
   final headers = lines.first.split(',');
   final int columnCount = headers.length;
 
-  // Build the new row: [key, englishValue, empty, empty...]
-  List<String> newRow = List.filled(columnCount, '');
-  newRow[0] = key;
-  newRow[1] = _escapeCsv(englishValue);
+  bool addedAny = false;
 
-  final newLine = newRow.join(',');
+  for (final input in inputs) {
+    // English value should replace underscores with space
+    final englishValue = input.replaceAll('_', ' ').trim();
+    if (englishValue.isEmpty) continue;
 
-  // Append to the CSV file
-  await file.writeAsString('\n' + newLine, mode: FileMode.append, encoding: utf8);
-  
-  print('✅ Successfully added "$englishValue" with key "$key" to $csvPath');
-  print('💡 Run the auto_translate script next to fill in the other languages!');
+    // Generate snake_case key
+    final key = toSnakeCase(englishValue);
+
+    // Build the new row: [key, englishValue, empty, empty...]
+    List<String> newRow = List.filled(columnCount, '');
+    newRow[0] = key;
+    newRow[1] = _escapeCsv(englishValue);
+
+    final newLine = newRow.join(',');
+
+    // Append to the CSV file
+    await file.writeAsString('\n' + newLine, mode: FileMode.append, encoding: utf8);
+    
+    print('✅ Successfully added "$englishValue" with key "$key" to $csvPath');
+    addedAny = true;
+  }
+
+  if (addedAny) {
+    print('\n🔄 Running auto_translate script...');
+    
+    final result = await Process.run('dart', ['run', 'lib/core/tools/localization/auto_translate.dart']);
+    if (result.exitCode == 0) {
+      stdout.write(result.stdout);
+    } else {
+      print('❌ Failed to run auto_translate:\n${result.stderr}');
+    }
+  } else {
+    print('⚠️ No valid keys were provided.');
+  }
 }
 
 /// Converts a human-readable string into snake_case.

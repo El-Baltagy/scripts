@@ -1,41 +1,68 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'dart:io';
 
 abstract class DioErrorHandler {
   static Failure handleError(DioException error) {
+    Failure? failure;
     switch (error.type) {
       case DioExceptionType.cancel:
-        return Failure('Request was cancelled by user.');
+        failure=   Failure('Request was cancelled by user.');
       case DioExceptionType.connectionTimeout:
-        return Failure('Connection timeout.');
+        failure=   Failure('Connection timeout.');
       case DioExceptionType.receiveTimeout:
-        return Failure('Receive timeout.');
+        failure=   Failure('Receive timeout.');
       case DioExceptionType.sendTimeout:
-        return Failure('Send timeout.');
+        failure=   Failure('Send timeout.');
       case DioExceptionType.badResponse:
-        return _handleBadResponse(error.response);
+        failure= _handleBadResponse(error.response);
       case DioExceptionType.connectionError:
         if (error.error is SocketException) {
-          return Failure('No internet connection.');
+          failure=   Failure('No internet connection.',);
         }
-        return Failure('Connection error.');
+        failure=   Failure('Connection error.');
       case DioExceptionType.unknown:
         if (error.error is SocketException) {
-          return Failure('No internet connection.');
+          failure=   Failure('No internet connection.');
         }
-        return Failure('Unexpected network error.');
+        failure=   Failure('Unexpected network error.');
       case DioExceptionType.badCertificate:
         // TODO: Handle this case.
-        return Failure('incorrect certificate');
+        failure=   Failure('incorrect certificate');
     }
+    return failure..error=error.error;
   }
 
   static Failure _handleBadResponse(Response? response) {
-    if (response == null) return Failure('Unknown server error.');
+    if (response == null) return   Failure('Unknown server error.');
     final code = response.statusCode ?? 0;
+     String message = response.statusMessage ?? 'Unknown error';
 
-    String message;
-    switch (code) {
+    try {
+      final   data = response.data is String
+          ? jsonDecode(response.data as String)
+           : response.data;
+
+      message = data['message']?.toString() ?? message;
+
+      if (data['errors'] is Map<String, dynamic>) {
+        final errors = data['errors'] as Map<String, dynamic>;
+
+        for (final value in errors.values) {
+          if (value is List && value.isNotEmpty) {
+            message = value.first.toString();
+            break;
+          }
+        }
+
+      }
+    } catch (_) {
+      // response.data wasn't valid JSON
+    }
+
+   final String? message2 = message;
+     switch (code) {
       case 400:
         message = 'Bad request.';
         break;
@@ -48,22 +75,23 @@ abstract class DioErrorHandler {
       case 404:
         message = 'Not found.';
         break;
+        case 422:
+        message = 'Unprocessable Entity';
+        break;
       case 500:
         message = 'Internal server error.';
         break;
-      default:
-        message = 'Unexpected error. Code: $code';
     }
-
-    return Failure(message, code);
+//+message
+    return Failure(message+(message2==null?'':'\n$message2'), code);
   }
 }
 class Failure {
+
+    Failure(this.message,  [this.code,this.error,]);
   final String message;
   final int? code;
-
-  const Failure(this.message, [this.code]);
-
+    Object?   error;
   @override
   String toString() => 'Failure(code: $code, message: $message)';
 }

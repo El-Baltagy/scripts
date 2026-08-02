@@ -64,7 +64,8 @@ void main(List<String> args) {
       rawKey = toSnakeCase(enText);
       autoKeyCount++;
     } else {
-      rawKey = toSnakeCase(rawKey); // normalise existing keys too
+      // Keep existing keys exactly as defined in the CSV (do not mutate with toSnakeCase)
+      rawKey = rawKey;
     }
 
     for (int i = 0; i < langCodes.length; i++) {

@@ -3,7 +3,11 @@ import 'package:flutter/foundation.dart';
 import 'package:logger/logger.dart' as logger_pkg;
 
 
-
+class NoParameter{
+  NoParameter._();
+  factory NoParameter() => _instance;
+  static final NoParameter _instance = NoParameter._();
+ }
 enum LoggerType { warning, info, error, fatal }
 
 // extension LoggerTypeExt on LoggerType {
@@ -26,9 +30,9 @@ enum LoggerType { warning, info, error, fatal }
 
 
   class PrintHelper {
+    factory PrintHelper() => _instance;
     PrintHelper._();
     static final PrintHelper _instance = PrintHelper._().._init();
-    factory PrintHelper() => _instance;
 
     logger_pkg.Logger? logger;
 
@@ -54,14 +58,16 @@ enum LoggerType { warning, info, error, fatal }
   }
 
 
-    void loggerPrint(dynamic message, LoggerType type, [String? tag, int framesToSkip=3]) {
-    if (kDebugMode  ) {
-      final String caller = _getCallerFunction(framesToSkip);
-      final String timestamp = DateTime.now().toString().split(' ').last;
-      final String tagLabel = tag != null ? '[$tag] ' : '';
-      final String msg = '[$timestamp] $tagLabel$caller\n   └─ $message';
+void loggerPrint(dynamic message, LoggerType type, [String? tag, int framesToSkip=3, String? explicitCaller]) {
+ if (kDebugMode  ) {
+final String caller = explicitCaller ?? (framesToSkip < 0 ? '' : _getCallerFunction(framesToSkip));
+final String timestamp = DateTime.now().toString().split(' ').last;
+final String tagLabel = tag != null ? '[$tag] ' : '';
+final String callerSection = caller.isNotEmpty ? '$caller\n   └─ ' : '';
+final String msg = '[$timestamp] $tagLabel$callerSection$message';
 
-      switch (type) {
+
+switch (type) {
         case LoggerType.warning:
            logger?.w(msg);
           break;

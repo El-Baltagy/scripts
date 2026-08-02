@@ -2,53 +2,48 @@ import 'dart:convert';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
-import '../shared/methods/print.dart';
-import 'dio_error_handler.dart';
+import 'package:newf/core/shared/methods/print.dart';
+import 'package:newf/core/api_helper/dio_error_handler.dart';
 
 // Threshold for background processing: 100KB
 const int threshold = 100 * 1024;
 /// Handles the API response by potentially offloading heavy JSON parsing 
 /// and model mapping to a background isolate.
 
+/// Pass [caller] from the call site using [_callerTag()] so async frames
+/// don't hide the real repo method.
 Future<Either<Failure, T>> handleResponse<T>({
   required Future<dynamic> onCallData,
   required T Function(Map<String, dynamic> map) asObject,
-}) async {
+String? caller,
+ }) async {
   try {
     final dynamic data = await onCallData;
-    
 
     final String jsonString = data is String ? data : data.toString();
     final int size = jsonString.length;
 
-    PrintHelper().loggerPrint(
-      '''✅ [API SUCCESS]\n   └─ Size: ${size} bytes\n   └─ Preview: ${size > 500 ? '${jsonString.substring(0, 500)}...' : jsonString}''',
-      LoggerType.info,
-    );
 
     final T result;
     if (size > threshold) {
-      // Use compute to handle both jsonDecode and model mapping in an isolate
       result = await compute(_parseAndMapIsolate<T>, _ParseParams<T>(jsonString, asObject));
     } else {
-      // Synchronous parse and map for small data
       final Map<String, dynamic> jsonMap = _ensureMap(jsonString);
       result = asObject(jsonMap);
     }
 
     return right(result);
   } on DioException catch (e) {
-    PrintHelper().loggerPrint(
-      '''💥 [API DIO ERROR]\n   └─ Status: ${e.response?.statusCode}\n   └─ Msg: ${e.message}\n   └─ Data: ${e.response?.data}''',
-      LoggerType.error,
-    );
+    // DioException is already logged by LoggerInterceptor.
     return left(DioErrorHandler.handleError(e));
   } catch (e, s) {
     PrintHelper().loggerPrint(
-      '''⚠️ [API PARSE/OTHER ERROR]\n   └─ Error: $e\n   └─ Stack: ${s.toString().split('\n').take(3).join('\n')}''',
+      '⚠️ [PARSE ERROR]\n   └─ Error: $e\n   └─ Stack: ${s.toString().split('\n').take(3).join('\n')}',
       LoggerType.fatal,
+      caller,
+       0,
     );
-    return left(Failure("Format Error or Unknown Error: $e", -2));
+    return left(Failure('Format Error or Unknown Error: $e', -2));
   }
 }
 

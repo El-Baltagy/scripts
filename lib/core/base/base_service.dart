@@ -1,4 +1,6 @@
+import 'dart:io';
 import 'package:dartz/dartz.dart';
+import 'package:newf/core/internet/connected_bloc.dart';
 import 'package:dio/dio.dart';
 
 import '../../core/api_helper/dio_error_handler.dart';
@@ -7,17 +9,17 @@ import 'base_cubit.dart';
 abstract class BaseService{
 
 }
-class RequestCallbackObserver<T, P> {
+class RequestCallbackObserver<T, P>   {
   RequestCallbackObserver({
-    required this.baseRequestBackType,
-    required this.parameter,
+      this.baseRequestBackType,
+      this.parameter,
     required this.onLoadCallback,
     required this.onRightCallback,
     required this.onLeftCallback,
     this.cancelToken,
   });
 
-  final BaseRequestBackType baseRequestBackType;
+  final BaseRequestBackType? baseRequestBackType;
   final P? parameter;
   final void Function() onLoadCallback;
   final void Function(T? data) onRightCallback;
@@ -28,26 +30,32 @@ class RequestCallbackObserver<T, P> {
 extension RequestHandler<T, P> on RequestCallbackObserver<T, P> {
   Future<void> handleRequest({
     required Future<Either<Failure, T>> Function(CancelToken? token) fetchFromClient,
-    // ── Local storage hooks (optional) ──────────────────────────────────────
-    Future<T?> Function()? fetchLocal,
+     Future<T?> Function()? fetchLocal,
     Future<void> Function(T? old, T? newData)? saveLocal,
     Future<void> Function()? clearLocal,
+    T Function(T oldData, T newData)? combinePagination, // <--- 1. ADD THIS
   }) async {
-    final type = baseRequestBackType;
+    final BaseRequestBackType type = baseRequestBackType??Reload();
 
-    // ── Guard by request type ──────────────────────────────────────────────
-    if (type is Init) {
+     if (type is Init) {
       if (fetchLocal != null) {
         final localData = await fetchLocal();
         if (localData != null) {
-          onRightCallback(localData);
+          Future.microtask(() => onRightCallback(localData));
           return;
         }
       }
     } else if (type is Reload) {
-      await clearLocal?.call();
-    } else if (type is Pagination) {
-      if (type.currentPage >= type.lastPage) return;
+      // final hasInternet = await ConnectivityService.validateInternetConnection();
+      // if (!hasInternet) {
+      //   onLeftCallback(Failure('No internet connection.', null, const SocketException('No internet')));
+      //   return;
+      // }
+      if(clearLocal!=null){
+        await clearLocal?.call();
+      }
+    } else if (type is PaginationInfo) {
+      if ((type.currentPage??0) >= (type.lastPage??0)) return;
     }
 
     // ── Notify loading ─────────────────────────────────────────────────────
@@ -58,17 +66,34 @@ extension RequestHandler<T, P> on RequestCallbackObserver<T, P> {
     final result = await fetchFromClient(cancelToken);
 
     // ── Handle result ──────────────────────────────────────────────────────
-    result.fold(
-          onLeftCallback,
-          (data) async {
-        if (fetchLocal != null) {
-          var local;
-          if (type is Pagination) {
-            local = await fetchLocal.call();
+    await result.fold(
+          (failure) async {
+            if (fetchLocal != null) {
+              final localData = await fetchLocal();
+              if (localData != null) {
+                onRightCallback(localData);
+                return;
+              }
+            }
+            onLeftCallback(failure);
+          },
+          (newData) async {
+            T finalData = newData;
+            T? oldData;
+            
+        // ── Combine pagination data if needed ──────────────────────────────
+        if (type is PaginationInfo && fetchLocal != null) {
+          oldData = await fetchLocal.call();
+          if (oldData != null && combinePagination != null) {
+            finalData = combinePagination(oldData, newData);
           }
-          await saveLocal?.call(local, data);
         }
-        onRightCallback(data);
+
+        if(saveLocal != null){
+          await saveLocal(oldData, finalData); // Save the combined finalData!
+        }
+
+        onRightCallback(finalData); // Yield the combined finalData to the Cubit!
       },
     );
   }

@@ -8,7 +8,7 @@ import 'locator_add_requried_data.dart';
 import 'ui_added_files.dart' show UIAddRequiredFiles;
 import 'controller_added_files.dart' show ControllerAddRequiredFiles;
 
-Future<void> main(List<dynamic> args) async {
+Future<void> main(List<String> args) async {
   if (args.isEmpty) {
     print('❌ Please provide a mainFolderName.');
     print('Usage: dart run tools/create_feature_folders.dart <mainFolderName>');
@@ -73,6 +73,7 @@ Future<void> main(List<dynamic> args) async {
     UIAddRequiredFiles(
       screenFileName: PathConstants().screenFileName(x),
       screenName: PathConstants().screenName(x),
+      secondaryName: x,
     ).makeRequiredFiles('ui');
     await addAutoRoute(
       PathConstants().routeName(x),
@@ -80,9 +81,9 @@ Future<void> main(List<dynamic> args) async {
     );
   }
 
-  if (!args.contains('--no-build')) {
-    await makeBuildRunner();
-  }
+  // if (!args.contains('--no-build')) {
+  //   await makeBuildRunner();
+  // }
 
   print('✅ Feature structure created successfully inside lib/features/screens');
 }

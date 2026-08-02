@@ -22,6 +22,6 @@ Future<void> main(List<String> args) async {
   // Project Health Analysis (Circular imports & Unused files)
   final healthAnalyzer = ProjectHealthAnalyzer(Directory.current.path);
   await healthAnalyzer.run(autoFix: withFixes);
-
+// flutter pub run custom_lint
   spinner.stop('✅ Maintenance completed successfully!');
 }

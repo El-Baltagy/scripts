@@ -28,6 +28,7 @@ void _createServiceClass(String  repoPath){
   if (!file.existsSync()) {
     final content =
     '''
+import 'package:newf/core/shared/methods/print.dart';    
 import 'package:${PathConstants().projectName}/core/base/base_service.dart';
 import 'package:${PathConstants().projectName}/core/base/base_local_repo.dart';
 import 'package:${PathConstants().projectName}/features/screens/${PathConstants().name}/data/repo/remote/${PathConstants().repoFileName()}';

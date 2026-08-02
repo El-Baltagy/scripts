@@ -15,25 +15,37 @@ abstract class _$AppRouter extends RootStackRouter {
 
   @override
   final Map<String, PageFactory> pagesMap = {
-    BottomNavBarRoute.name: (routeData) {
+    MainHomeRoute.name: (routeData) {
+      final args = routeData.argsAs<MainHomeRouteArgs>(orElse: () =>   MainHomeRouteArgs.noArgs());
       return AutoRoutePage<dynamic>(
         routeData: routeData,
-        child: WrappedRoute(child: const BottomNavBarPage()),
+        child: WrappedRoute(
+            child: MainHomePage(
+           args: args ,
+        )),
       );
-    }
+    },
+
   };
 }
-
 /// generated route for
-/// [BottomNavBarPage]
-class BottomNavBarRoute extends PageRouteInfo<void> {
-  const BottomNavBarRoute({List<PageRouteInfo>? children})
-      : super(
-          BottomNavBarRoute.name,
-          initialChildren: children,
-        );
+/// [MainHomePage]
+class MainHomeRoute extends PageRouteInfo<MainHomeRouteArgs> {
+  MainHomeRoute({
+   required MainHomeRouteArgs args  ,
+    List<PageRouteInfo>? children,
+  }) : super(
+    MainHomeRoute.name,
+    args: args,
+    initialChildren: children,
+  );
 
-  static const String name = 'BottomNavBarRoute';
+  static const String name = 'MainHomeRoute';
 
-  static const PageInfo<void> page = PageInfo<void>(name);
+  static const PageInfo<MainHomeRouteArgs> page =
+  PageInfo<MainHomeRouteArgs>(name);
+}
+class MainHomeRouteArgs {
+  const MainHomeRouteArgs( );
+   static MainHomeRouteArgs noArgs()=>MainHomeRouteArgs();
 }

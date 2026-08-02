@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import '../create_auto_files/path_constants.dart';
 import '../create_auto_files/main_script.dart' as main_script;
-import '../model_creation/create_entity.dart' as create_entity;
+import '../model_creation/1-create_entity.dart' as create_entity;
 import 'add_function_script.dart' as add_function_script;
 
 void main(List<String> args) async {
