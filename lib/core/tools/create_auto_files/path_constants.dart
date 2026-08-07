@@ -50,20 +50,38 @@ class PathConstants {
   String folderPath(String folder) => '${basePath()}/$folder';
 
   ///..............repo.........///
-  String repoName() => "${toPascalCase(name)}Repo";
 
-  String repoFileName() => '${name}_repo.dart';
+  /// Concrete remote repo — e.g. HomeRemoteRepo
+  String repoName() => "${toPascalCase(name)}RemoteRepo";
+
+  String remoteRepoFileName() => '${name}_remote_repo.dart';
+
+  /// Abstract base repo — e.g. BaseHomeRepo
+  String baseRepoName() => "Base${toPascalCase(name)}Repo";
+
+  String baseRepoFileName() => 'base_${name}_repo.dart';
 
   String modelNotifierDataFileName() => '${name}_notifier_data.dart';
 
   String modelNotifierDataClassName() => '${toPascalCase(name)}NotifierData';
 
-  String remoteRepoPath() => folderPath('data/repo/remote');
+  /// Remote repo lives in data/repo/remote/
+  String repoPath() => folderPath('data/repo');
+
+  /// Base repo lives in data/repo/
+  String baseRepoPath() => folderPath('data/repo');
 
   ///..............service .........///
-  String serviceName() => "${toPascalCase(name)}Service";
 
-  String serviceFileName() => '${name}_service.dart';
+  /// Concrete remote service — e.g. HomeRemoteService
+  String serviceName() => "${toPascalCase(name)}RemoteService";
+
+  String serviceFileName() => '${name}_remote_service.dart';
+
+  /// Abstract base service — e.g. BaseHomeService
+  String baseServiceName() => "Base${toPascalCase(name)}Service";
+
+  String baseServiceFileName() => 'base_${name}_service.dart';
 
   ///..............notifier.........///
 

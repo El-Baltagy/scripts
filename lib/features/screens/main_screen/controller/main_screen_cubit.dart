@@ -6,20 +6,22 @@ import 'package:newf/core/base/base_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:newf/main.dart';
-import 'package:newf/features/screens/main_home/service/main_home_service.dart';
-part 'main_home_state.dart';
+import 'package:newf/features/screens/main_screen/service/base_main_screen_service.dart';
+part 'main_screen_state.dart';
 
-class MainHomeCubit extends BaseCubit<MainHomeState> {
-   MainHomeCubit(this._service) : super(MainHomeLoaded()) ;
-  final MainHomeService _service;
+class MainScreenCubit extends BaseCubit<MainScreenState> {
+   MainScreenCubit(this._service) : super(MainScreenLoaded()) ;
+
+  /// Depends on the abstraction [BaseMainScreenService], not on a concrete implementation.
+  final BaseMainScreenService _service;
   
-     static MainHomeCubit get({BuildContext? context,bool listen=false}) =>
+     static MainScreenCubit get({BuildContext? context,bool listen=false}) =>
       BlocProvider.of(context??navigatorKey.currentContext!,listen: listen);
   
     // Always holds the latest combined state — used by copyWith
-   MainHomeLoaded get _current => state is MainHomeLoaded
-       ? state as MainHomeLoaded
-       : MainHomeLoaded();
+   MainScreenLoaded get _current => state is MainScreenLoaded
+       ? state as MainScreenLoaded
+       : MainScreenLoaded();
        
     Future<void> init() async {
      // TODO: implement init

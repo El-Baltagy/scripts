@@ -1,22 +1,22 @@
-part of 'main_home_cubit.dart';
+part of 'main_screen_cubit.dart';
 
 @immutable
-abstract class MainHomeState {}
+abstract class MainScreenState {}
 
-class MainHomeLoaded extends MainHomeState {
+class MainScreenLoaded extends MainScreenState {
 
-  MainHomeLoaded({
+  MainScreenLoaded({
      this.allWorkersEmit,
     this.refreshOrInit,
    });
   final BaseEmit? allWorkersEmit ;
-  final MainHomeState? refreshOrInit;
+  final MainScreenState? refreshOrInit;
 
-  MainHomeLoaded copyWith({
+  MainScreenLoaded copyWith({
     BaseEmit? allWorkersEmit, 
-    MainHomeState? refreshOrInit,
+    MainScreenState? refreshOrInit,
   }) {
-    return MainHomeLoaded(
+    return MainScreenLoaded(
       refreshOrInit: refreshOrInit ?? this.refreshOrInit,
        allWorkersEmit: allWorkersEmit ?? this.allWorkersEmit,
      );

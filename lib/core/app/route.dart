@@ -1,6 +1,6 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart' ;
- import 'package:newf/features/screens/main_home/ui/main_home/main_home_screen.dart';
+import 'package:newf/features/screens/main_screen/ui/main_screen/main_screen_screen.dart';
 part  'route.gr.dart';
 
 @AutoRouterConfig(replaceInRouteName: 'Page,Route')
@@ -10,11 +10,10 @@ class AppRouter extends _$AppRouter {
   @override
   List<AutoRoute> get routes => [
       AutoRoute(
-        page: MainHomeRoute.page,
+        page: MainScreenRoute.page,
         // initial: true,
       ),
-
-
+     
   ];
 }
 // class AuthGuard extends AutoRouteGuard {

@@ -4,44 +4,78 @@ import 'path_constants.dart';
 
 
 class RepoAddRequiredFiles extends BaseAddRequiredFiles {
-  RepoAddRequiredFiles( );
-
+  RepoAddRequiredFiles();
 
   @override
   makeRequiredFiles(String folder) async {
     super.makeRequiredFiles(folder);
 
     final modelDir = Directory('${PathConstants().folderPath(folder)}/model');
-    final repoRemoteDir = Directory(PathConstants().remoteRepoPath());
+    final baseRepoDir = Directory(PathConstants().baseRepoPath());
+    final remoteRepoDir = Directory(PathConstants().repoPath());
 
-    ///create folder
+    /// create model folder
     if (!modelDir.existsSync()) {
       modelDir.createSync(recursive: true);
       print('📁 Created model folder: ${modelDir.path}');
     }
 
-    ///create repo folder (remote)
-    create_Repo(repoRemoteDir);
+    /// create base repo folder and file (abstract / interface)
+    _createBaseRepoDir(baseRepoDir);
+
+    /// create remote repo folder and file (concrete implementation)
+    _createRemoteRepoDir(remoteRepoDir);
   }
 
-  create_Repo(Directory dir){
+  void _createBaseRepoDir(Directory dir) {
     if (!dir.existsSync()) {
       dir.createSync(recursive: true);
-      print('📁 Created repo folder: ${dir.path}');
+      print('📁 Created base repo folder: ${dir.path}');
     }
-    _createRepoClass(dir.path);
+    _createBaseRepoClass(dir.path);
+  }
+
+  void _createRemoteRepoDir(Directory dir) {
+    if (!dir.existsSync()) {
+      dir.createSync(recursive: true);
+      print('📁 Created remote repo folder: ${dir.path}');
+    }
+    _createRemoteRepoClass(dir.path);
   }
 }
 
+// ─── Abstract base repo ────────────────────────────────────────────────────
 
-_createRepoClass(String repoPath) {
-  final filePath = '$repoPath/${PathConstants().repoFileName()}';
+void _createBaseRepoClass(String basePath) {
+  final filePath = '$basePath/${PathConstants().baseRepoFileName()}';
   final file = File(filePath);
 
   if (!file.existsSync()) {
-    final content =
-        '''
-import 'package:newf/core/shared/methods/print.dart';        
+    final content = '''
+import 'package:${PathConstants().projectName}/core/base/base_remote_repo.dart';
+
+/// Abstract contract for the ${PathConstants().name} data layer.
+/// High-level modules (services) depend on this, not on concrete implementations.
+abstract class ${PathConstants().baseRepoName()} extends BaseRepo {
+  // TODO: declare repo method signatures here
+}
+''';
+    file.writeAsStringSync(content);
+    print('📄 Created base repo Dart file: $filePath');
+  } else {
+    print('⚠️ Base repo Dart file already exists: $filePath');
+  }
+}
+
+// ─── Concrete remote repo ──────────────────────────────────────────────────
+
+void _createRemoteRepoClass(String repoPath) {
+  final filePath = '$repoPath/${PathConstants().remoteRepoFileName()}';
+  final file = File(filePath);
+
+  if (!file.existsSync()) {
+    final content = '''
+import 'package:newf/core/shared/methods/print.dart';
 import 'package:${PathConstants().projectName}/core/constants/app_api.dart';
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
@@ -49,19 +83,17 @@ import 'package:newf/core/api_helper/caller_tag.dart';
 import 'package:${PathConstants().projectName}/core/api_helper/dio_error_handler.dart';
 import 'package:${PathConstants().projectName}/core/api_helper/dio_helper.dart';
 import 'package:${PathConstants().projectName}/core/api_helper/response_handler.dart';
-import 'package:${PathConstants().projectName}/core/base/base_remote_repo.dart';
+import 'package:${PathConstants().projectName}/features/screens/${PathConstants().name}/data/repo/${PathConstants().baseRepoFileName()}';
 
-class ${PathConstants().repoName()} extends BaseRepo {
+/// Concrete remote implementation of [${PathConstants().baseRepoName()}].
+class ${PathConstants().repoName()} implements ${PathConstants().baseRepoName()} {
   final DioHelper dio;
   ${PathConstants().repoName()}(this.dio);
 }
-
 ''';
     file.writeAsStringSync(content);
-    print('📄 Created repo Dart file: $filePath');
+    print('📄 Created remote repo Dart file: $filePath');
   } else {
-    print('⚠️ Repo Dart file already exists: $filePath');
+    print('⚠️ Remote repo Dart file already exists: $filePath');
   }
 }
-
-

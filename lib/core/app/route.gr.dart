@@ -15,37 +15,38 @@ abstract class _$AppRouter extends RootStackRouter {
 
   @override
   final Map<String, PageFactory> pagesMap = {
-    MainHomeRoute.name: (routeData) {
-      final args = routeData.argsAs<MainHomeRouteArgs>(orElse: () =>   MainHomeRouteArgs.noArgs());
+    MainScreenRoute.name: (routeData) {
+      final args = routeData.argsAs<MainScreenRouteArgs>(orElse: () =>   MainScreenRouteArgs.noArgs());
       return AutoRoutePage<dynamic>(
         routeData: routeData,
         child: WrappedRoute(
-            child: MainHomePage(
+            child: MainScreenPage(
            args: args ,
         )),
       );
     },
-
+ 
   };
 }
+
 /// generated route for
-/// [MainHomePage]
-class MainHomeRoute extends PageRouteInfo<MainHomeRouteArgs> {
-  MainHomeRoute({
-   required MainHomeRouteArgs args  ,
+/// [MainScreenPage]
+class MainScreenRoute extends PageRouteInfo<MainScreenRouteArgs> {
+  MainScreenRoute({
+   required MainScreenRouteArgs args  ,
     List<PageRouteInfo>? children,
   }) : super(
-    MainHomeRoute.name,
+    MainScreenRoute.name,
     args: args,
     initialChildren: children,
   );
 
-  static const String name = 'MainHomeRoute';
+  static const String name = 'MainScreenRoute';
 
-  static const PageInfo<MainHomeRouteArgs> page =
-  PageInfo<MainHomeRouteArgs>(name);
+  static const PageInfo<MainScreenRouteArgs> page =
+  PageInfo<MainScreenRouteArgs>(name);
 }
-class MainHomeRouteArgs {
-  const MainHomeRouteArgs( );
-   static MainHomeRouteArgs noArgs()=>MainHomeRouteArgs();
+class MainScreenRouteArgs {
+  const MainScreenRouteArgs( );
+   static MainScreenRouteArgs noArgs()=>MainScreenRouteArgs();
 }

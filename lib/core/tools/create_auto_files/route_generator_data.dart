@@ -6,42 +6,18 @@ import 'path_constants.dart';
 
 
 Future<void> addAutoRoute(String routeName,String screenFileName) async {
-  final filePath = PathConstants().appRoutePath();
-  final file = File(filePath);
-  if (!file.existsSync()) {
-    file.createSync(recursive: true);
-    final String content =
-    '''
-import 'package:auto_route/auto_route.dart';
-import 'package:flutter/material.dart' ;
-part  '${PathConstants().appRouteName}.gr.dart';
-
-@AutoRouterConfig(replaceInRouteName: '${PathConstants().screenSuffixTxt},${PathConstants().pathRouteSuffix}')
-class AppRouter extends _\$AppRouter {
-  AppRouter() : super();
-
-  @override
-  List<AutoRoute> get routes => [
-     
-  ];
-}
-// class AuthGuard extends AutoRouteGuard {
-//   @override
-//   void onNavigation(NavigationResolver resolver, StackRouter router) {
-//     final isLoggedIn = false; // check your auth state
-//     if (isLoggedIn) {
-//       resolver.next(true);
-//     } else {
-//       router.replace(const AuthRoute());
-//     }
-//   }
-// }
-      ''';
-
-    file.writeAsStringSync(content);
+   final routeFile = File(PathConstants().appRoutePath());
+  if (!routeFile.existsSync()) {
+    routeFile.createSync(recursive: true);
+     routeFile.writeAsStringSync(_routeFileData);
   }
-  
-  final String content = await file.readAsString();
+   final routeGenFile = File(PathConstants().routeGenPath());
+   if (!routeGenFile.existsSync()) {
+     routeGenFile.createSync(recursive: true);
+     routeGenFile.writeAsStringSync(_routeFileGenData);
+   }
+
+  final String content = await routeFile.readAsString();
   String updatedText = content;
 
   if (content.contains('${routeName}.page')) {
@@ -68,7 +44,7 @@ class AppRouter extends _\$AppRouter {
     "List<AutoRoute> get routes => [\n$routeStr"
   );
 
-  file.writeAsStringSync(updatedText);
+  routeFile.writeAsStringSync(updatedText);
 
   // Automatically update route.gr.dart
   final String screenName = routeName.replaceAll('Route', 'Page');
@@ -131,29 +107,54 @@ class $argsName {
   }
 }
 
-// Future<void>makeBuildRunner()async{
-//   stdout.write('Do you want generate only for this auto rout [Y/N]: ');
-//   final input =
-//       stdin.readLineSync(encoding: utf8)?.trim().toLowerCase() ?? '';
-//   if (input.isEmpty || input == 'n' || input == 'no') {
-//     print('Aborted by user.');
-//     exit(0);
+final String _routeFileData =
+'''
+import 'package:auto_route/auto_route.dart';
+import 'package:flutter/material.dart' ;
+part  '${PathConstants().appRouteName}.gr.dart';
+
+@AutoRouterConfig(replaceInRouteName: '${PathConstants().screenSuffixTxt},${PathConstants().pathRouteSuffix}')
+class AppRouter extends _\$AppRouter {
+  AppRouter({super.navigatorKey});
+
+  @override
+  List<AutoRoute> get routes => [
+     
+  ];
+}
+// class AuthGuard extends AutoRouteGuard {
+//   @override
+//   void onNavigation(NavigationResolver resolver, StackRouter router) {
+//     final isLoggedIn = false; // check your auth state
+//     if (isLoggedIn) {
+//       resolver.next(true);
+//     } else {
+//       router.replace(const AuthRoute());
+//     }
 //   }
-//   List<String> additionalArg = [];
-//
-//   if (input.toLowerCase() == 'y' || input.toLowerCase() == 'yes') {
-//     additionalArg = ['--build-filter=${PathConstants().routeGenPath()}'];
-//   }
-//
-//   final process = await Process.start(
-//     'flutter',
-//     ['pub', 'run', 'build_runner', 'build', ...additionalArg],
-//     runInShell: true,
-//   );
-//   process.stdout.transform(SystemEncoding().decoder).listen(print);
-//   process.stderr.transform(SystemEncoding().decoder).listen(print);
-//   await process.exitCode;
 // }
-// Future<void> main() async {
-//   await makeBuildRunner();
-// }
+      ''';
+
+final String _routeFileGenData =
+'''
+// GENERATED CODE - DO NOT MODIFY BY HAND
+
+// **************************************************************************
+// AutoRouterGenerator
+// **************************************************************************
+
+// ignore_for_file: type=lint
+// coverage:ignore-file
+
+part of 'route.dart';
+
+abstract class _\$AppRouter extends RootStackRouter {
+  // ignore: unused_element
+  _\$AppRouter({super.navigatorKey});
+
+  @override
+  final Map<String, PageFactory> pagesMap = {
+ 
+  };
+}
+''';

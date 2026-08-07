@@ -7,42 +7,72 @@ class ServiceAddRequiredFiles extends BaseAddRequiredFiles {
 
   @override
   makeRequiredFiles(String folder) async {
-      super.makeRequiredFiles(folder);
+    super.makeRequiredFiles(folder);
 
-      final repoDir = Directory(PathConstants().folderPath(folder));
+    final serviceDir = Directory(PathConstants().folderPath(folder));
 
-      ///create service folder
-      if (!repoDir.existsSync()) {
-        repoDir.createSync(recursive: true);
-        print('📁 Created service folder: ${repoDir.path}');
-      }
+    /// create service folder
+    if (!serviceDir.existsSync()) {
+      serviceDir.createSync(recursive: true);
+      print('📁 Created service folder: ${serviceDir.path}');
+    }
 
-      _createServiceClass(repoDir.path);
+    /// 1. Abstract base service (the contract cubit depends on)
+    _createBaseServiceClass(serviceDir.path);
+
+    /// 2. Concrete remote service (the implementation injected at runtime)
+    _createRemoteServiceClass(serviceDir.path);
   }
 }
 
-void _createServiceClass(String  repoPath){
-  final filePath = '$repoPath/${PathConstants().serviceFileName()}';
+// ─── Abstract base service ─────────────────────────────────────────────────
+
+void _createBaseServiceClass(String servicePath) {
+  final filePath = '$servicePath/${PathConstants().baseServiceFileName()}';
   final file = File(filePath);
 
   if (!file.existsSync()) {
-    final content =
-    '''
-import 'package:newf/core/shared/methods/print.dart';    
+    final content = '''
 import 'package:${PathConstants().projectName}/core/base/base_service.dart';
-import 'package:${PathConstants().projectName}/core/base/base_local_repo.dart';
-import 'package:${PathConstants().projectName}/features/screens/${PathConstants().name}/data/repo/remote/${PathConstants().repoFileName()}';
 
-class ${PathConstants().serviceName()} extends BaseService {
+/// Abstract contract for the ${PathConstants().name} service layer.
+/// The cubit depends on this, not on a concrete implementation.
+abstract class ${PathConstants().baseServiceName()} extends BaseService {
+  // TODO: declare service method signatures here
+}
+''';
+    file.writeAsStringSync(content);
+    print('📄 Created base service Dart file: $filePath');
+  } else {
+    print('⚠️ Base service Dart file already exists: $filePath');
+  }
+}
+
+// ─── Concrete remote service ───────────────────────────────────────────────
+
+void _createRemoteServiceClass(String servicePath) {
+  final filePath = '$servicePath/${PathConstants().serviceFileName()}';
+  final file = File(filePath);
+
+  if (!file.existsSync()) {
+    final content = '''
+import 'package:newf/core/shared/methods/print.dart';
+import 'package:${PathConstants().projectName}/core/base/base_local_repo.dart';
+import 'package:${PathConstants().projectName}/features/screens/${PathConstants().name}/data/repo/${PathConstants().baseRepoFileName()}';
+import 'package:${PathConstants().projectName}/features/screens/${PathConstants().name}/service/${PathConstants().baseServiceFileName()}';
+
+/// Concrete implementation of [${PathConstants().baseServiceName()}].
+/// Depends on [${PathConstants().baseRepoName()}] (abstraction), not on the remote repo directly.
+class ${PathConstants().serviceName()} implements ${PathConstants().baseServiceName()} {
   ${PathConstants().serviceName()}(this._remoteRepo, this._localRepo);
-  
-  final ${PathConstants().repoName()} _remoteRepo;
+
+  final ${PathConstants().baseRepoName()} _remoteRepo;
   final BaseLocalRepo _localRepo;
 }
 ''';
     file.writeAsStringSync(content);
-    print('📄 Created service Dart file: $filePath');
+    print('📄 Created remote service Dart file: $filePath');
   } else {
-    print('⚠️ service Dart file already exists: $filePath');
+    print('⚠️ Remote service Dart file already exists: $filePath');
   }
 }

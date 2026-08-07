@@ -37,12 +37,14 @@ import 'package:${PathConstants().projectName}/core/base/base_cubit.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:${PathConstants().projectName}/main.dart';
-import 'package:${PathConstants().projectName}/features/screens/${PathConstants().name}/service/${PathConstants().name}_service.dart';
+import 'package:${PathConstants().projectName}/features/screens/${PathConstants().name}/service/${PathConstants().baseServiceFileName()}';
 part '${PathConstants().stateFileName()}';
 
 class ${PathConstants().cubitName()} extends BaseCubit<${PathConstants().stateName()}> {
    ${PathConstants().cubitName()}(this._service) : super(${PathConstants().initialStateName()}()) ;
-  final ${PathConstants().serviceName()} _service;
+
+  /// Depends on the abstraction [${PathConstants().baseServiceName()}], not on a concrete implementation.
+  final ${PathConstants().baseServiceName()} _service;
   
      static ${PathConstants().cubitName()} get({BuildContext? context,bool listen=false}) =>
       BlocProvider.of(context??navigatorKey.currentContext!,listen: listen);

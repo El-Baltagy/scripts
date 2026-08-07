@@ -3,31 +3,31 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:newf/core/constants/app_locator.dart';
-import 'package:newf/features/screens/main_home/controller/main_home_cubit.dart';
+import 'package:newf/features/screens/main_screen/controller/main_screen_cubit.dart';
  
-part 'main_home_screen_mixin.dart';
+part 'main_screen_screen_mixin.dart';
 
 @RoutePage()
-class MainHomePage extends StatefulWidget implements AutoRouteWrapper {
-  const MainHomePage({super.key, required this.args});
-  final MainHomeRouteArgs args;
+class MainScreenPage extends StatefulWidget implements AutoRouteWrapper {
+  const MainScreenPage({super.key, required this.args});
+  final MainScreenRouteArgs args;
 
   @override
   Widget wrappedRoute(BuildContext context) {
-    return BlocProvider<MainHomeCubit>(
+    return BlocProvider<MainScreenCubit>(
       create: (context) =>  AppLocator()()() ,
       child: this,
     );
   }
 
   @override
-  State<MainHomePage> createState() => _MainHomePageState();
+  State<MainScreenPage> createState() => _MainScreenPageState();
 }
 
-class _MainHomePageState extends MainHomePageBaseState {
+class _MainScreenPageState extends MainScreenPageBaseState {
   @override
   Widget build(BuildContext context) {
-    return BlocListener<MainHomeCubit, MainHomeState>(
+    return BlocListener<MainScreenCubit, MainScreenState>(
       listener: (context, state) {
         // TODO: implement listener
       },
