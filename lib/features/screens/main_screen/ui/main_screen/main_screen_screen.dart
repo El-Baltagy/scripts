@@ -6,9 +6,8 @@ import 'package:newf/core/constants/app_locator.dart';
 import 'package:newf/features/screens/main_screen/controller/main_screen_cubit.dart';
 
 part 'main_screen_screen_mixin.dart';
-part 'widgets/sized_box.dart';
-part 'widgets/column_behaviour.dart';
-part 'widgets/main_screen_body.dart';
+part 'widgets/sized_box_widget_used_for_add_spaces.dart';
+part 'widgets/column_behaviour_used_for_add_new_widget.dart';
 
 @RoutePage()
 class MainScreenPage extends StatefulWidget implements AutoRouteWrapper {
@@ -35,9 +34,17 @@ class _MainScreenPageState extends MainScreenPageBaseState {
         // TODO: implement listener
       },
       child: Scaffold(
-        Semantics(
-          label: 'MainScreenBody',
-          child: const MainScreenBody(),
+        body: Column(
+          children: [
+            Semantics(
+              label: 'SizedBoxWidgetUsedForAddSpaces',
+              child: const SizedBoxWidgetUsedForAddSpaces(),
+            ),
+            Semantics(
+              label: 'ColumnBehaviourUsedForAddNewWidget',
+              child: const ColumnBehaviourUsedForAddNewWidget(),
+            ),
+          ],
         ),
       ),
     );

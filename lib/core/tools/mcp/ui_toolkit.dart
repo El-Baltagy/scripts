@@ -110,7 +110,8 @@ void main(List<String> args) {
       _printUsage();
       exit(1);
     }
-    _runAnalyzer(args[1], autoFix: args.contains('--fix'));
+    _runAnalyzer(args[1], autoFix: true);
+    // _runAnalyzer(args[1], autoFix: args.contains('--fix'));
   } else if (mode == 'extract') {
     if (args.length < 2) {
       print('❌ extract mode requires a path to the screen file.');
