@@ -4,8 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:newf/core/constants/app_locator.dart';
 import 'package:newf/features/screens/main_screen/controller/main_screen_cubit.dart';
- 
+
 part 'main_screen_screen_mixin.dart';
+part 'widgets/sized_box.dart';
+part 'widgets/column_behaviour.dart';
+part 'widgets/main_screen_body.dart';
 
 @RoutePage()
 class MainScreenPage extends StatefulWidget implements AutoRouteWrapper {
@@ -15,7 +18,7 @@ class MainScreenPage extends StatefulWidget implements AutoRouteWrapper {
   @override
   Widget wrappedRoute(BuildContext context) {
     return BlocProvider<MainScreenCubit>(
-      create: (context) =>  AppLocator()()() ,
+      create: (context) => AppLocator()()(),
       child: this,
     );
   }
@@ -32,7 +35,10 @@ class _MainScreenPageState extends MainScreenPageBaseState {
         // TODO: implement listener
       },
       child: Scaffold(
-
+        Semantics(
+          label: 'MainScreenBody',
+          child: const MainScreenBody(),
+        ),
       ),
     );
   }

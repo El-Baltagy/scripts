@@ -5,6 +5,10 @@ import 'package:newf/core/base/base_local_repo.dart';
 import 'package:newf/features/screens/main_screen/data/repo/base_main_screen_repo.dart';
 import 'package:newf/features/screens/main_screen/service/base_main_screen_service.dart';
 
+import '../../../../core/base/base_service.dart';
+import '../../../../core/shared/methods/no_parameter.dart';
+import '../data/model/project_data.dart';
+
 /// Concrete implementation of [BaseMainScreenService].
 /// Depends on [BaseMainScreenRepo] (abstraction), not on the remote repo directly.
 class MainScreenRemoteService implements BaseMainScreenService {
@@ -32,9 +36,7 @@ class MainScreenRemoteService implements BaseMainScreenService {
         return null;
       },
       saveLocal: (old, newData) async {
-        if (newData != null) {
-          await _localRepo.saveData(cacheKey, savedData: newData.toJson());
-        }
+
       },
       clearLocal: () => _localRepo.clearData(cacheKey),
     );

@@ -1,6 +1,9 @@
 import 'package:newf/core/constants/app_typedef.dart';
 import 'package:newf/core/base/base_service.dart';
 
+import '../../../../core/shared/methods/no_parameter.dart';
+import '../data/model/project_data.dart';
+
 /// Abstract contract for the main_screen service layer.
 /// The cubit depends on this, not on a concrete implementation.
 abstract class BaseMainScreenService extends BaseService {

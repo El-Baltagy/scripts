@@ -8,6 +8,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:newf/main.dart';
 import 'package:newf/features/screens/main_screen/service/base_main_screen_service.dart';
+
+import '../../../../core/shared/methods/no_parameter.dart';
+import '../data/model/project_data.dart';
 part 'main_screen_state.dart';
 
 class MainScreenCubit extends BaseCubit<MainScreenState> {

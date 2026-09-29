@@ -5,5 +5,5 @@ abstract class EndPoints {
   static const String login = '/api/login';
 
 
-  static const String getProjects = '/api/$functionName';
+  static const String getProjects = '/api/ ';
 }
