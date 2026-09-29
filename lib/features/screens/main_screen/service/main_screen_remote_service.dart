@@ -1,3 +1,5 @@
+import 'package:newf/core/constants/app_typedef.dart';
+import 'package:newf/core/constants/app_constant.dart';
 import 'package:newf/core/shared/methods/print.dart';
 import 'package:newf/core/base/base_local_repo.dart';
 import 'package:newf/features/screens/main_screen/data/repo/base_main_screen_repo.dart';
@@ -10,4 +12,31 @@ class MainScreenRemoteService implements BaseMainScreenService {
 
   final BaseMainScreenRepo _remoteRepo;
   final BaseLocalRepo _localRepo;
+
+  @override
+  Future<void> getProjectsServ(
+    RequestCallbackObserver<PojectsData, NoParameters> requestInfo,
+  ) {
+    const cacheKey = AppConstant.getProjectsKeyCash;
+    return requestInfo.handleRequest(
+      fetchFromClient: (token) => _remoteRepo.getProjectsApi(
+        requestInfo.parameter,
+        cancelToken: token,
+      ),
+      fetchLocal: () async {
+        final tuple = await _localRepo.readData(cacheKey);
+
+        if (tuple?.$1['pr'] == _localRepo.primarySessionId) {
+          return PojectsData.fromJson(tuple!.$2);
+        }
+        return null;
+      },
+      saveLocal: (old, newData) async {
+        if (newData != null) {
+          await _localRepo.saveData(cacheKey, savedData: newData.toJson());
+        }
+      },
+      clearLocal: () => _localRepo.clearData(cacheKey),
+    );
+  }
 }

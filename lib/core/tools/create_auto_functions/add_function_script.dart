@@ -52,13 +52,22 @@ Future<void> main(List<dynamic> args) async {
   PathConstants().setData(featureName);
   final p = PathConstants();
 
-  final baseFeature = 'lib/features/screens/$featureName';
-  final repoPath    = '$baseFeature/data/repo/remote/${featureName}_repo.dart';
-  final svcPath     = '$baseFeature/service/${p.serviceFileName()}';
-  final cubitPath   = '$baseFeature/controller/${p.cubitFileName()}';
-  final statePath   = '$baseFeature/controller/${p.stateFileName()}';
+  final baseFeature   = 'lib/features/screens/$featureName';
 
-  final requiredFiles = [repoPath, svcPath, cubitPath, statePath];
+  // Concrete remote repo  →  data/repo/remote/home_remote_repo.dart
+  final repoPath      = '$baseFeature/data/repo/${p.remoteRepoFileName()}';
+  // Abstract base repo    →  data/repo/base_home_repo.dart
+  final baseRepoPath  = '$baseFeature/data/repo/${p.baseRepoFileName()}';
+
+  // Concrete remote service  →  service/home_remote_service.dart
+  final svcPath       = '$baseFeature/service/${p.serviceFileName()}';
+  // Abstract base service   →  service/base_home_service.dart
+  final baseSvcPath   = '$baseFeature/service/${p.baseServiceFileName()}';
+
+  final cubitPath     = '$baseFeature/controller/${p.cubitFileName()}';
+  final statePath     = '$baseFeature/controller/${p.stateFileName()}';
+
+  final requiredFiles = [repoPath, baseRepoPath, svcPath, baseSvcPath, cubitPath, statePath];
   for (final path in requiredFiles) {
     if (!File(path).existsSync()) {
       stderr.writeln('❌ File not found: $path');
@@ -75,21 +84,23 @@ Future<void> main(List<dynamic> args) async {
   await registerIntConstant(keyCodeName, '${featureName}_$functionName'.hashCode % 10000);
   await registerApiEndpoint(functionName);
 
-  // 2. Repo
+  // 2. Repo  (abstract signature + concrete implementation)
   await addFunctionToRepo(
     featureName: featureName,
     functionName: functionName,
     returnType: returnType,
     paramType: paramType,
+    baseRepoPath: baseRepoPath,
     repoPath: repoPath,
   );
 
-  // 3. Service
+  // 3. Service  (abstract signature + concrete implementation)
   await addFunctionToService(
     featureName: featureName,
     functionName: functionName,
     returnType: returnType,
     paramType: paramType,
+    baseSvcPath: baseSvcPath,
     svcPath: svcPath,
   );
 

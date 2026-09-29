@@ -1,3 +1,4 @@
+import 'package:newf/core/constants/app_constant.dart';
 import 'package:newf/core/shared/methods/print.dart';
 import 'package:newf/core/constants/app_api.dart';
 import 'package:dartz/dartz.dart';
@@ -12,4 +13,19 @@ import 'package:newf/features/screens/main_screen/data/repo/base_main_screen_rep
 class MainScreenRemoteRepo implements BaseMainScreenRepo {
   final DioHelper dio;
   MainScreenRemoteRepo(this.dio);
+
+  @override
+  Future<Either<Failure, PojectsData>> getProjectsApi(
+    NoParameters? parameter, {
+    CancelToken? cancelToken,
+  }) async {
+    return handleResponse(
+      onCallData: dio.getData(
+        uri: EndPoints.getProjects,
+        cancelToken: cancelToken,
+        caller: callerTag(),
+      ),
+      asObject: PojectsData.fromJson,
+    );
+  }
 }

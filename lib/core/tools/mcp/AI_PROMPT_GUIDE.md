@@ -25,7 +25,10 @@ When building a screen, you must follow the `AutoRouteWrapper` pattern as seen i
 
 ## 3. ♿ Accessibility & Semantics
 - **Rule**: Every UI component MUST be wrapped with a `Semantics` widget **AS THE FIRST (OUTERMOST) WRAPPER** in the main screen file.
-  - *Correct*: `Semantics(label: '...', child: Center(child: MyWidget()))`
+  -*Correct*: for Ex: First outside wrapper widget tree consists of ==>Column([
+  -Semantics(label: '...', child: MyWidget1()),
+  - Semantics(label: '...', child: MyWidget2())...etc
+  - ]),
   - *Incorrect*: `Center(child: Semantics(label: '...', child: MyWidget()))`
 - **Label**: Provide a concise, meaningful description in the `label` property.
 

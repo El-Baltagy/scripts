@@ -117,5 +117,9 @@ abstract class AppConstant {
   static const String workerMarkTaskCompleteKeyCash = 'Tasks_workerMarkTaskComplete_cache';
 
   static const int workerMarkTaskCompleteKeyCode = 2719;
+
+  static const String getProjectsKeyCash = 'main_screen_getProjects_cache';
+
+  static const int getProjectsKeyCode = 9033;
 }
 

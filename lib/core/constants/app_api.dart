@@ -4,4 +4,6 @@ abstract class EndPoints {
   // Api Endpoints
   static const String login = '/api/login';
 
+
+  static const String getProjects = '/api/$functionName';
 }
